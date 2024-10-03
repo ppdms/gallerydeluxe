@@ -193,8 +193,15 @@ let GalleryDeluxe = {
 							attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 						}).addTo(map);
 
-						// Add a marker at the image location
-						L.marker([lat, lon]).addTo(map);
+						// Add a marker at the image location with a click event to open Google Maps
+						L.marker([lat, lon]).addTo(map).on('click', function() {
+							window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`, '_blank');
+						});
+
+						// Force a map refresh after a short delay
+						setTimeout(() => {
+							map.invalidateSize();
+						}, 100);
 					}
 
 					exifTimeoutId = setTimeout(() => {
