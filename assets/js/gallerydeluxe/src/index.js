@@ -185,22 +185,46 @@ let GalleryDeluxe = {
 						let lat = activeImage.exif.Lat;
 						let lon = activeImage.exif.Long;
 
-						// Initialize the map
-						let map = L.map('gd-modal-map').setView([lat, lon], 13);
-
-						// Add OpenStreetMap tile layer
-						L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-							attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-						}).addTo(map);
-
-						// Add a marker at the image location with a click event to open Google Maps
-						L.marker([lat, lon]).addTo(map).on('click', function() {
-							window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`, '_blank');
-						});
-
-						// Force a map refresh after a short delay
+						// Delay map initialization
 						setTimeout(() => {
-							map.invalidateSize();
+							// Initialize the map
+							let map = L.map('gd-modal-map', {
+								center: [lat, lon],
+								zoom: 13,
+								zoomControl: false
+							});
+
+							// Add OpenStreetMap tile layer
+							let tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+								attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+							}).addTo(map);
+
+							// Add a marker at the image location with a click event to open Google Maps
+							let marker = L.marker([lat, lon]).addTo(map);
+							marker.on('click', function(e) {
+								e.originalEvent.stopPropagation(); // Prevent event from bubbling up
+								window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`, '_blank');
+							});
+
+							// Function to ensure map is fully loaded
+							const ensureMapLoaded = () => {
+								map.invalidateSize();
+								if (!map.hasLayer(tileLayer) || !map.hasLayer(marker)) {
+									map.removeLayer(tileLayer);
+									map.removeLayer(marker);
+									tileLayer.addTo(map);
+									marker.addTo(map);
+								}
+								map.setView([lat, lon], 13);
+							};
+
+							// Call ensureMapLoaded multiple times
+							for (let i = 0; i < 5; i++) {
+								setTimeout(ensureMapLoaded, 100 * (i + 1));
+							}
+
+							// Additional check after a longer delay
+							setTimeout(ensureMapLoaded, 2000);
 						}, 100);
 					}
 
