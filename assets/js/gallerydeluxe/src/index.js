@@ -37,6 +37,8 @@ let GalleryDeluxe = {
 		imageWrapper.classList.add('gd-modal-content-wrapper');
 		modal.insertBefore(imageWrapper, modal.firstChild);
 
+		let isNavigatingThroughHistory = false;
+
 		const closeModal = (e) => {
 			if (e) {
 				e.preventDefault();
@@ -49,6 +51,13 @@ let GalleryDeluxe = {
 			modal.style.display = 'none';
 			// Enable scrolling.
 			document.body.style.overflow = 'auto';
+
+			if (!isNavigatingThroughHistory) {
+				// Clear the 'image' parameter from the URL
+				const url = new URL(window.location);
+				url.searchParams.delete('image');
+				history.pushState({}, '', url);
+			}
 		};
 
 		modalClose.addEventListener('click', function () {
@@ -92,6 +101,13 @@ let GalleryDeluxe = {
 		});
 
 		const openActiveImage = () => {
+			if (!isNavigatingThroughHistory) {
+				// Update the URL with the image name
+				const imageUrl = new URL(window.location);
+				imageUrl.searchParams.set('image', activeImage.name);
+				history.pushState({imageName: activeImage.name}, '', imageUrl);
+			}
+
 			imageWrapper.addEventListener('touchmove', preventDefault);
 			imageWrapper.addEventListener('gesturestart', preventDefault);
 
@@ -145,13 +161,41 @@ let GalleryDeluxe = {
 					};
 
 					let date = new Date(activeImage.exif.Date);
-					var dateString = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split('T')[0];
-					addTag('Date', dateString);
+					var dateString = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+						.toISOString()
+						.split('T')[0];
+					var timeString = date.toTimeString().split(' ')[0].substr(0, 5);  // HH:MM
+					addTag('Date', `${dateString} ${timeString}`);
+
 					let tags = activeImage.exif.Tags;
 					for (const tag in tags) {
 						addTag(tag, tags[tag]);
 					}
+
 					exif.classList.remove(onTimeOutClass);
+
+					// Add map if GPS coordinates are available
+					if (activeImage.exif.Lat && activeImage.exif.Long) {
+						let mapDiv = document.createElement('div');
+						mapDiv.id = 'gd-modal-map';
+						mapDiv.style.height = '200px';
+						mapDiv.style.marginTop = '10px';
+						exif.appendChild(mapDiv);
+
+						let lat = activeImage.exif.Lat;
+						let lon = activeImage.exif.Long;
+
+						// Initialize the map
+						let map = L.map('gd-modal-map').setView([lat, lon], 13);
+
+						// Add OpenStreetMap tile layer
+						L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+							attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+						}).addTo(map);
+
+						// Add a marker at the image location
+						L.marker([lat, lon]).addTo(map);
+					}
 
 					exifTimeoutId = setTimeout(() => {
 						exif.classList.add(onTimeOutClass);
@@ -252,6 +296,27 @@ let GalleryDeluxe = {
 		};
 
 		new Pig(imageData, options).enable();
+
+		const handleUrlChange = () => {
+			isNavigatingThroughHistory = true;
+			const urlParams = new URLSearchParams(window.location.search);
+			const imageName = urlParams.get('image');
+			if (imageName && imagesMap.has(imageName)) {
+				activeImage = imagesMap.get(imageName);
+				openActiveImage();
+			} else {
+				closeModal();
+			}
+			isNavigatingThroughHistory = false;
+		};
+
+		// Call handleUrlChange to handle initial URL
+		handleUrlChange();
+
+		// Add event listener for popstate
+		window.addEventListener('popstate', function(event) {
+			handleUrlChange();
+		});
 	},
 };
 
