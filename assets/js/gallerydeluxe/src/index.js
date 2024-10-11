@@ -169,13 +169,17 @@ let GalleryDeluxe = {
 
 					// Add ISO and focal length
 					if (activeImage.exif.Tags.FocalLengthIn35mmFormat) {
-						addTag('Focal Length (35mm)', activeImage.exif.Tags.FocalLengthIn35mmFormat);
+						addTag('Focal Length (35mm)', activeImage.exif.Tags.FocalLengthIn35mmFormat+"mm");
 					}
 					if (activeImage.exif.Tags.ExposureTime) {
 						addTag('Exposure Time', activeImage.exif.Tags.ExposureTime);
 					}
 					if (activeImage.exif.Tags.FNumber) {
-						addTag('F-number', activeImage.exif.Tags.FNumber);
+						// Format F-number as f/X.X
+						const [numerator, denominator] = activeImage.exif.Tags.FNumber.split('/').map(Number);
+						const fNumber = denominator ? numerator / denominator : numerator;
+						const formattedFNumber = `f/${fNumber.toFixed(1)}`;
+						addTag('F-number', formattedFNumber);
 					}
 					if (activeImage.exif.Tags.ISO) {
 						addTag('ISO', activeImage.exif.Tags.ISO);
