@@ -153,7 +153,7 @@ let GalleryDeluxe = {
 
 					const addTag = (tag, value) => {
 						let dt = document.createElement('dt');
-						dt.innerText = camelToTitle(tag);
+						dt.innerText = tag;
 						dl.appendChild(dt);
 						let dd = document.createElement('dd');
 						dd.innerText = value;
@@ -167,9 +167,18 @@ let GalleryDeluxe = {
 					var timeString = date.toTimeString().split(' ')[0].substr(0, 5);  // HH:MM
 					addTag('Date', `${dateString} ${timeString}`);
 
-					let tags = activeImage.exif.Tags;
-					for (const tag in tags) {
-						addTag(tag, tags[tag]);
+					// Add ISO and focal length
+					if (activeImage.exif.Tags.FocalLengthIn35mmFormat) {
+						addTag('Focal Length (35mm)', activeImage.exif.Tags.FocalLengthIn35mmFormat);
+					}
+					if (activeImage.exif.Tags.ExposureTime) {
+						addTag('Exposure Time', activeImage.exif.Tags.ExposureTime);
+					}
+					if (activeImage.exif.Tags.FNumber) {
+						addTag('F-number', activeImage.exif.Tags.FNumber);
+					}
+					if (activeImage.exif.Tags.ISO) {
+						addTag('ISO', activeImage.exif.Tags.ISO);
 					}
 
 					exif.classList.remove(onTimeOutClass);
@@ -350,11 +359,5 @@ let GalleryDeluxe = {
 		});
 	},
 };
-
-function camelToTitle(text) {
-	return text.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) {
-		return str.toUpperCase();
-	});
-}
 
 export default GalleryDeluxe;

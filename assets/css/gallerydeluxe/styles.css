@@ -66,7 +66,7 @@
   right: 10px;
   color: #fff;
   background-color: #8a8a8a;
-  padding: 0.75rem;
+  padding: 0.5rem 0.75rem; /* Reduced top and bottom padding */
   opacity: 0.75;
   filter: drop-shadow(-1px -1px 2px #ccc);
 }
@@ -81,19 +81,27 @@
   cursor: pointer;
 }
 
+.gd-modal-exif dl {
+  display: grid;
+  grid-template-columns: minmax(100px, auto) 1fr;
+  gap: 0.15rem 0.25rem; /* Reduced vertical gap */
+  margin: 0; /* Remove default margin */
+}
+
 .gd-modal-exif dl dd {
-  display: inline;
+  display: block;
   margin: 0;
+  text-align: right;
 }
 
 .gd-modal-exif dl dd:after {
-  display: block;
-  content: "";
+  content: none;
 }
 
 .gd-modal-exif dl dt {
-  display: inline-block;
-  min-width: 100px;
+  display: block;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .gd-modal-close {
