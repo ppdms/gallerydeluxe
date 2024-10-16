@@ -28,6 +28,14 @@ let GalleryDeluxe = {
 		const modal = document.getElementById('gd-modal');
 		const modalClose = modal.querySelector('#gd-modal-close');
 
+		// Add new button for downloading original image
+		const downloadOriginalButton = document.createElement('button');
+		downloadOriginalButton.id = 'gd-modal-download-original';
+		downloadOriginalButton.innerHTML = '↓'; // Downward arrow
+		downloadOriginalButton.title = 'Download original image';
+		downloadOriginalButton.classList.add('gd-modal-close');
+		modalClose.parentNode.insertBefore(downloadOriginalButton, modalClose);
+
 		const preventDefault = function (e) {
 			// For iphone.
 			e.preventDefault();
@@ -260,13 +268,6 @@ let GalleryDeluxe = {
 				fullImage.src = activeImage.full;
 				thumbnail.src = activeImage['20'];
 
-				// Add click event listener to the full-size image
-				fullImage.addEventListener('click', function(e) {
-					e.preventDefault();
-					e.stopPropagation();
-					window.open(`https://data.ppdms.gr/originals/${activeImage.name.replace('img/', '')}`, '_blank');
-				});
-
 				thumbnail.onload = function () {
 					if (thumbnail) {
 						imageWrapper.appendChild(thumbnail);
@@ -286,6 +287,17 @@ let GalleryDeluxe = {
 				};
 
 				modal.style.display = 'block';
+
+				// Update download original button URL
+				const imageHash = activeImage.name.replace('img/', '').replace('.jpeg', '');
+				downloadOriginalButton.onclick = (e) => {
+					e.preventDefault();
+					window.open(`https://data.ppdms.gr/originals/${imageHash}.jpeg`, '_blank');
+				};
+
+				setTimeout(function () {
+					removeOldEls();
+				}, 1000);
 			}
 
 			setTimeout(function () {
