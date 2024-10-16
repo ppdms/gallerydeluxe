@@ -260,6 +260,13 @@ let GalleryDeluxe = {
 				fullImage.src = activeImage.full;
 				thumbnail.src = activeImage['20'];
 
+				// Add click event listener to the full-size image
+				fullImage.addEventListener('click', function(e) {
+					e.preventDefault();
+					e.stopPropagation();
+					window.open(`https://data.ppdms.gr/originals/${activeImage.name.replace('img/', '')}`, '_blank');
+				});
+
 				thumbnail.onload = function () {
 					if (thumbnail) {
 						imageWrapper.appendChild(thumbnail);
