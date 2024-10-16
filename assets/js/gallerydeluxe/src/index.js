@@ -102,10 +102,11 @@ let GalleryDeluxe = {
 
 		const openActiveImage = () => {
 			if (!isNavigatingThroughHistory) {
-				// Update the URL with the image name
+				// Update the URL with only the image hash
+				const imageHash = activeImage.name.replace('img/', '').replace('.jpeg', '');
 				const imageUrl = new URL(window.location);
-				imageUrl.searchParams.set('image', activeImage.name);
-				history.pushState({imageName: activeImage.name}, '', imageUrl);
+				imageUrl.searchParams.set('image', imageHash);
+				history.pushState({imageHash: imageHash}, '', imageUrl);
 			}
 
 			imageWrapper.addEventListener('touchmove', preventDefault);
@@ -259,6 +260,13 @@ let GalleryDeluxe = {
 				fullImage.src = activeImage.full;
 				thumbnail.src = activeImage['20'];
 
+				// Add click event listener to the full-size image
+				fullImage.addEventListener('click', function(e) {
+					e.preventDefault();
+					e.stopPropagation();
+					window.open(`https://data.ppdms.gr/originals/${activeImage.name.replace('img/', '')}`, '_blank');
+				});
+
 				thumbnail.onload = function () {
 					if (thumbnail) {
 						imageWrapper.appendChild(thumbnail);
@@ -344,10 +352,15 @@ let GalleryDeluxe = {
 		const handleUrlChange = () => {
 			isNavigatingThroughHistory = true;
 			const urlParams = new URLSearchParams(window.location.search);
-			const imageName = urlParams.get('image');
-			if (imageName && imagesMap.has(imageName)) {
-				activeImage = imagesMap.get(imageName);
-				openActiveImage();
+			const imageHash = urlParams.get('image');
+			if (imageHash) {
+				const fullImageName = `img/${imageHash}.jpeg`;
+				if (imagesMap.has(fullImageName)) {
+					activeImage = imagesMap.get(fullImageName);
+					openActiveImage();
+				} else {
+					closeModal();
+				}
 			} else {
 				closeModal();
 			}
