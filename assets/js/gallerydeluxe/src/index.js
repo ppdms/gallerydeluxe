@@ -341,7 +341,7 @@ let GalleryDeluxe = {
 			spaceBetweenImages: 1,
 			urlForSize: function (filename, size) {
 				let img = imagesMap.get(filename);
-				return img[size] || img['100'] || img.full; // Fallback if the requested size doesn’t exist
+				return img[size] || img['500'] || img.full; // Fallback if the requested size doesn’t exist
 			},
 			styleForElement: function (filename) {
 				let image = imagesMap.get(filename);
