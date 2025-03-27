@@ -27,7 +27,7 @@
   {{ range . }}
     {{ $thumbs := partial "gallerydeluxe/create-thumbs.html" . }}
     {{ $full := $thumbs.full }}
-    {{ $20 := (index $thumbs "20") }}
+    {{ $500 := (index $thumbs "500") }}
     {{ $colors := slice }}
     {{ $exif := dict }}
     {{ if $params.enable_exif }}
@@ -45,7 +45,7 @@
     {{ end }}
     {{ if (ge hugo.Version "0.104") }}
       {{/* .Colors method was added in Hugo 0.104.0 */}}
-      {{ $colors = $20.Colors }}
+      {{ $colors = $500.Colors }}
     {{ end }}
     {{ $m :=  dict
       "name" .Name
@@ -54,9 +54,7 @@
       "width" $full.Width
       "height" $full.Height
       "colors" $colors
-      "20" $20.RelPermalink
-      "100" (index $thumbs "100").RelPermalink
-      "250" (index $thumbs "250").RelPermalink
+      "500" $500.RelPermalink
       "500" (index $thumbs "500").RelPermalink
     }}
     {{ $s = $s | append $m }}

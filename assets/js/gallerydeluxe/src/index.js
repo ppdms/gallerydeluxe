@@ -266,7 +266,7 @@ let GalleryDeluxe = {
 				thumbnail.classList.add(classThumbnail);
 
 				fullImage.src = activeImage.full;
-				thumbnail.src = activeImage['20'];
+				thumbnail.src = activeImage['500'] || activeImage.full;
 
 				thumbnail.onload = function () {
 					if (thumbnail) {
@@ -340,7 +340,8 @@ let GalleryDeluxe = {
 			classPrefix: 'gd',
 			spaceBetweenImages: 1,
 			urlForSize: function (filename, size) {
-				return imagesMap.get(filename)[size];
+				let img = imagesMap.get(filename);
+				return img[size] || img['100'] || img.full; // Fallback if the requested size doesn’t exist
 			},
 			styleForElement: function (filename) {
 				let image = imagesMap.get(filename);
