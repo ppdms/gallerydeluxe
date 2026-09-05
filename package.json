@@ -1,0 +1,11 @@
+{
+  "name": "@ppdms/gallerydeluxe",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./assets/js/gallerydeluxe/src/index.ts",
+    "./types": "./assets/js/gallerydeluxe/src/types.ts",
+    "./css": "./assets/css/gallerydeluxe/styles.css"
+  }
+}

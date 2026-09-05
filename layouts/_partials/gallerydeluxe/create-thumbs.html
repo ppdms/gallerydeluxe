@@ -1,4 +1,3 @@
-{{/* 20, 100, 250, and 500 height */}}
 {{ $full := . }}
 {{ with site.Params.gallerydeluxe.watermark }}
   {{ $opts := . }}
@@ -25,20 +24,32 @@
       {{ $y = sub $y (div $watermarkHeight 2) }}
     {{ end }}
     {{ if eq $posx "right" }}
-      {{ $x = sub $fullWidth  (add $watermarkWidth $padding) }}
+      {{ $x = sub $fullWidth (add $watermarkWidth $padding) }}
     {{ end }}
     {{ if eq $posy "bottom" }}
-      {{ $y = sub  $full.Height (add $watermarkHeight $padding) }}
+      {{ $y = sub $full.Height (add $watermarkHeight $padding) }}
     {{ end }}
     {{ $full = $full.Filter (images.Overlay $watermark $x $y ) }}
   {{ end }}
 {{ end }}
-{{ $m := dict
-  "full" $full
-  "20"  (.Resize "x20")
-  "100" (.Resize "x100")
-  "250" (.Resize "x250")
-  "500" (.Resize "x500")
-}}
 
-{{ return $m }}
+{{ $origLongEdge := math.Max $full.Width $full.Height }}
+{{ $edges := slice 320 640 960 1280 1920 2560 }}
+{{ $sources := slice }}
+{{ $seenWidths := newScratch }}
+
+{{ range $edge := $edges }}
+  {{ if or (le $edge $origLongEdge) (eq (len $sources) 0) }}
+    {{ $thumb := $full.Fit (printf "%dx%d webp q82" $edge $edge) }}
+    {{ $wKey := string $thumb.Width }}
+    {{ if not ($seenWidths.Get $wKey) }}
+      {{ $seenWidths.Set $wKey true }}
+      {{ $sources = $sources | append (dict "src" $thumb.RelPermalink "width" $thumb.Width "height" $thumb.Height) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return (dict
+  "full" $full
+  "sources" $sources
+) }}

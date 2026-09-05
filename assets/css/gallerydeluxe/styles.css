@@ -1,121 +1,347 @@
-.gd-figure:hover {
-  filter: brightness(1.25);
-  cursor: pointer;
-}
+/* GalleryDeluxe runtime: bounded lazy media with the production presentation. */
 
-.gd-modal-target {
-  width: 300px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.gd-modal-target:hover {
-  opacity: 0.7;
-}
-
-.gd-modal {
-  display: none;
-  position: fixed;
-  z-index: 5;
-  left: 0;
-  top: 0;
+.gd-contact-sheet {
+  position: relative;
   width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.8);
+  margin: 0 auto;
 }
 
-.gd-modal-content-wrapper {
+.gd-photo-list {
   position: relative;
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-/* Modal Content (image) */
-.gd-modal-content {
-  max-width: 100%;
-  max-height: 100%;
-  bottom: 0;
-  left: 0;
-  margin: auto;
-  overflow: auto;
-  position: fixed;
-  right: 0;
-  top: 0;
-  object-fit: contain;
+.gd-photo-item {
+  position: absolute;
+  overflow: visible;
+  margin: 0;
+  box-sizing: border-box;
+  list-style: none;
 }
 
-.gd-modal-content.gd-modal-thumbnail {
-  backdrop-filter: blur(5px);
-  transition: opacity 0.75s ease;
-  z-index: 10;
+.gd-photo-shell {
+  position: absolute !important;
+  inset: 0;
+  display: block;
+  overflow: visible;
+  width: auto !important;
+  height: auto !important;
+  color: inherit;
+  text-decoration: none;
+}
+
+.gd-photo-shell:hover {
   opacity: 1;
 }
 
-.gd-modal-content.gd-modal-loaded.gd-modal-thumbnail {
+.gd-photo-shell:focus-visible {
+  outline: 2px solid var(--accent, #1a5fb4);
+  outline-offset: 3px;
+  z-index: 5;
+}
+
+.gd-photo-img {
+  position: absolute;
+  left: var(--gd-polaroid-side, 12px);
+  top: var(--gd-polaroid-top, 12px);
+  z-index: 1;
+  display: block;
+  width: calc(100% - var(--gd-polaroid-side, 12px) * 2);
+  height: calc(100% - var(--gd-polaroid-top, 12px) - var(--gd-polaroid-caption, 44px));
+  max-width: none;
+  margin: 0;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+
+.gd-photo-img.gd-loaded {
+  opacity: 1;
+}
+
+.gd-photo-error {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(247, 245, 239, 0.96);
+  color: #2c2923;
+  font-size: var(--text-xs, 1.35rem);
+  text-align: center;
+}
+
+.gd-photo-retry {
+  padding: 0.4rem 1rem;
+  font-size: var(--text-xs, 1.35rem);
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+/* Native dialog viewer, visually equivalent to the production lightbox. */
+.gd-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  margin: auto;
+  padding: 0;
+  border: none;
+  background: rgb(18, 18, 18);
+  color: #e6e6e6;
+  overflow: hidden;
+}
+
+.gd-viewer::backdrop {
+  background: rgb(18, 18, 18);
+}
+
+.gd-viewer-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.gd-viewer-header {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: block;
+  padding: 1.2rem;
+  background: transparent;
+  pointer-events: none;
+}
+
+.gd-viewer-status {
+  display: none;
+}
+
+.gd-viewer-actions {
+  display: block;
+}
+
+.gd-viewer-download,
+.gd-viewer-close {
+  position: absolute;
+  z-index: 20;
+  right: 10px;
+  color: #8a8a8a;
+  font-size: 40px;
+  font-weight: 700;
+  transition: 0.3s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  width: 40px;
+  text-align: center;
+  pointer-events: auto;
+}
+
+.gd-viewer-download {
+  top: 40px;
+  font-size: 34px;
+}
+
+.gd-viewer-close {
+  top: 0;
+}
+
+.gd-viewer-download:hover,
+.gd-viewer-download:focus,
+.gd-viewer-close:hover,
+.gd-viewer-close:focus {
+  color: #bbb;
+  text-decoration: none;
+}
+
+.gd-viewer-download:focus-visible,
+.gd-viewer-close:focus-visible {
+  outline: none;
+}
+
+.gd-viewer-nav:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.gd-viewer-main {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.gd-viewer-nav {
+  display: none;
+}
+
+.gd-viewer-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.gd-viewer-image-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.gd-viewer-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+
+main#content .gd-viewer-stage .gd-viewer-image {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  object-fit: contain;
+}
+
+.gd-viewer-image.gd-viewer-thumbnail {
+  z-index: 2;
+  opacity: 1;
+  transition: opacity 750ms ease;
+}
+
+.gd-viewer-image.gd-viewer-thumbnail.gd-viewer-loaded {
   opacity: 0;
   pointer-events: none;
 }
 
-.gd-modal-exif {
+.gd-viewer-error {
   position: absolute;
-  z-index: 20;
-  bottom: 10px;
-  right: 10px;
-  color: #fff;
-  background-color: #8a8a8a;
-  padding: 0.75rem;
-  opacity: 0.75;
-  filter: drop-shadow(-1px -1px 2px #ccc);
+  z-index: 3;
+  color: #bbb;
+  text-align: center;
 }
 
-.gd-modal-exif-ontimeout {
+.gd-viewer-retry {
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.4rem;
+  background: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.gd-viewer-footer {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 10;
+  display: block;
+  width: min(32rem, calc(100vw - 2rem));
+  max-width: min(32rem, calc(100vw - 2rem));
+  pointer-events: none;
+}
+
+.gd-viewer-caption {
+  display: none;
+}
+
+.gd-viewer-details {
+  display: block;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  padding: 0.5rem 0.75rem;
+  box-sizing: border-box;
+  background: rgb(138, 138, 138);
+  color: #fff;
+  font-size: var(--text-xs, 1.35rem);
+  opacity: 1;
+  filter: drop-shadow(-1px -1px 2px #ccc);
+  pointer-events: auto;
+}
+
+.gd-viewer-details.gd-viewer-details-ontimeout {
   transition: opacity 2s ease-out;
   opacity: 0;
 }
 
-.gd-modal-exif:hover {
+.gd-viewer-details:hover {
   opacity: 1;
   cursor: pointer;
 }
 
-.gd-modal-exif dl dd {
-  display: inline;
+.gd-viewer-details summary {
+  display: none;
+}
+
+.gd-exif-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0.5rem 0;
+}
+
+.gd-exif-list dt {
+  color: #eee;
+}
+
+.gd-exif-list dd {
   margin: 0;
+  color: #fff;
+  text-align: right;
 }
 
-.gd-modal-exif dl dd:after {
-  display: block;
-  content: "";
+.gd-viewer-map-section {
+  width: 100%;
+  margin-top: 0.5rem;
 }
 
-.gd-modal-exif dl dt {
-  display: inline-block;
-  min-width: 100px;
+.gd-viewer-map {
+  width: 100%;
+  height: 200px;
+  margin-top: 0.5rem;
 }
 
-.gd-modal-close {
-  position: absolute;
-  z-index: 20;
-  top: 0px;
-  right: 10px;
-  color: #8a8a8a;
-  font-size: 40px;
-  font-weight: bold;
-  transition: 0.3s;
+.gd-viewer-map-error {
+  margin: 0.5rem 0 0;
+  color: #fff;
 }
 
-@media only screen and (max-device-width: 800px) {
-  .gd-modal-close {
-    font-size: 45px;
+@media (prefers-reduced-motion: reduce) {
+  .gd-photo-img,
+  .gd-viewer-close,
+  .gd-viewer-image.gd-viewer-thumbnail {
+    transition: none !important;
   }
-}
-
-.gd-modal-close:hover,
-.gd-modal-close:focus {
-  color: #bbb;
-  text-decoration: none;
-  cursor: pointer;
 }
