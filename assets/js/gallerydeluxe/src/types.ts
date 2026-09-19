@@ -20,6 +20,13 @@ export interface Photo {
   };
 }
 
+/** The slice of a photo the contact-sheet geometry is derived from. */
+export interface PhotoGeometry {
+  id: string;
+  width: number;
+  height: number;
+}
+
 export interface GalleryManifest {
   version: 1;
   images: Photo[];

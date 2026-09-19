@@ -6,20 +6,64 @@
   margin: 0 auto;
 }
 
+/*
+  The sheet without the arrangement runtime: a plain flowing grid, which is
+  what a visitor with JavaScript disabled keeps. The runtime swaps this for the
+  justified layout by absolutely positioning the cells.
+*/
 .gd-photo-list {
-  position: relative;
-  width: 100%;
-  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+  gap: 3.2rem 2.4rem;
   margin: 0;
   padding: 0;
+  list-style: none;
 }
 
 .gd-photo-item {
-  position: absolute;
+  --gd-paper-tint: #fffdf6;
+  position: relative;
   overflow: visible;
+  aspect-ratio: var(--gd-card-ar, 1);
   margin: 0;
   box-sizing: border-box;
   list-style: none;
+}
+
+/*
+  Until the arrangement is applied the sheet is not shown at all, so a slow
+  connection never catches it half-rearranged. `html.gd-js` is set by an inline
+  script in the document head; without JavaScript the sheet is simply visible
+  in the flowing layout above.
+
+  The fallback grid is removed from layout rather than just hidden: it is much
+  taller than the justified sheet, and leaving it in flow would make the page
+  shrink by tens of thousands of pixels the moment the arrangement lands.
+*/
+html.gd-js .gd-contact-sheet:not([data-gd-ready]) .gd-photo-list {
+  display: none;
+}
+
+/*
+  With the cells gone the sheet would collapse to the page's own minimum height
+  and show a stub of background where the photographs belong. Holding it open
+  for a full viewport keeps the page looking intentional for the moment before
+  the arrangement lands. The arranged sheet is always far taller than this, so
+  it only ever grows from here.
+*/
+html.gd-js .gd-contact-sheet:not([data-gd-ready]) {
+  min-height: 100vh;
+}
+
+/* Arranged: cells are placed at the justified positions the runtime computed. */
+.gd-contact-sheet[data-gd-ready] .gd-photo-list {
+  display: block;
+  height: 100%;
+}
+
+.gd-contact-sheet[data-gd-ready] .gd-photo-item {
+  position: absolute;
+  aspect-ratio: auto;
 }
 
 .gd-photo-shell {
@@ -54,11 +98,16 @@
   max-width: none;
   margin: 0;
   object-fit: cover;
+  opacity: 1;
+}
+
+/* Fade images in only once the runtime can report their load state. */
+[data-gd-enhanced] .gd-photo-img {
   opacity: 0;
   transition: opacity 500ms ease;
 }
 
-.gd-photo-img.gd-loaded {
+[data-gd-enhanced] .gd-photo-img.gd-loaded {
   opacity: 1;
 }
 

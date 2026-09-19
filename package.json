@@ -6,6 +6,11 @@
   "exports": {
     ".": "./assets/js/gallerydeluxe/src/index.ts",
     "./types": "./assets/js/gallerydeluxe/src/types.ts",
+    "./layout": "./assets/js/gallerydeluxe/src/layout.ts",
+    "./shells": "./assets/js/gallerydeluxe/src/shells.ts",
+    "./runtime": "./assets/js/gallerydeluxe/src/runtime.ts",
+    "./viewer": "./assets/js/gallerydeluxe/src/viewer.ts",
+    "./gallery": "./assets/js/gallerydeluxe/src/gallery.ts",
     "./css": "./assets/css/gallerydeluxe/styles.css"
   }
 }

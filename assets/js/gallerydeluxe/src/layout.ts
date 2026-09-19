@@ -1,4 +1,4 @@
-import type { Photo } from "./types.js";
+import type { PhotoGeometry } from "./types.js";
 
 export interface FrameMetrics {
   side: number;
@@ -9,7 +9,7 @@ export interface FrameMetrics {
 }
 
 export interface PositionedItem {
-  photo: Photo;
+  photo: PhotoGeometry;
   index: number;
   top: number;
   left: number;
@@ -28,7 +28,7 @@ const IMAGE_HEIGHT = 230;
  * Derives the stable paper frame used by the original GalleryDeluxe contact
  * sheet. The hash keeps card details deterministic without storing layout data.
  */
-export function getFrameMetrics(photo: Photo): FrameMetrics {
+export function getFrameMetrics(photo: PhotoGeometry): FrameMetrics {
   let hash = 0;
   for (let i = 0; i < photo.id.length; i++) {
     hash += photo.id.charCodeAt(i);
@@ -69,7 +69,7 @@ function getMinimumRowAspect(viewportWidth: number): number {
  * stable card geometry from metadata and the current viewport width.
  */
 export function computeLayout(
-  photos: readonly Photo[],
+  photos: readonly PhotoGeometry[],
   containerWidth: number,
   viewportWidth = containerWidth
 ): ComputedLayout {
@@ -82,7 +82,7 @@ export function computeLayout(
   const minimumRowAspect = getMinimumRowAspect(viewportWidth);
   const availableWidth = Math.max(containerWidth - edgePadding * 2, 1);
   const items: PositionedItem[] = [];
-  let currentRow: Array<{ photo: Photo; index: number; aspectRatio: number }> = [];
+  let currentRow: Array<{ photo: PhotoGeometry; index: number; aspectRatio: number }> = [];
   let currentY = edgePadding;
   let currentX = edgePadding;
   let rowAspectRatio = 0;
