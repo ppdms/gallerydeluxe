@@ -59,6 +59,11 @@ export function arrangeSheet(
 
     const layout = computeLayout(geometry, containerWidth, window.innerWidth);
     container.style.height = `${layout.containerHeight}px`;
+    // Cells inside the first screen should win the bandwidth race, and which
+    // ones those are is only known once they hold positions: a wide viewport
+    // shows several per row, so counting from the start of the arrangement
+    // would prioritise barely any of them.
+    const fold = window.innerHeight;
 
     for (const item of layout.items) {
       const shell = ordered[item.index];
@@ -70,10 +75,8 @@ export function arrangeSheet(
       style.height = `${item.height}px`;
       if (shell.image) {
         shell.image.sizes = `${item.width}px`;
-      }
-      // The first cells the visitor sees should win the bandwidth race.
-      if (shell.image && item.index < 2) {
-        shell.image.fetchPriority = "high";
+        // Everything below the fold keeps the lazy default and waits.
+        shell.image.fetchPriority = item.top < fold ? "high" : "low";
       }
     }
 
